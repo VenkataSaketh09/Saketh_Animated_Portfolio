@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { Canvas, useFrame } from "@react-three/fiber";
 import {
   Points,
@@ -25,7 +26,6 @@ import {
   TestTube,
   Zap,
   Layers,
-  Monitor,
   Mail,
   Phone,
   Linkedin,
@@ -147,7 +147,7 @@ function MorphingGeometry() {
 // Neural Network Visualization
 function NeuralNetwork() {
   const groupRef = useRef<THREE.Group>(null);
-  const nodes = useRef([]);
+  // const nodes = useRef([]);
 
   useFrame((state) => {
     if (groupRef.current) {
@@ -211,10 +211,10 @@ function CustomCursor() {
   const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
-    interface MousePosition {
-      x: number;
-      y: number;
-    }
+    // interface MousePosition {
+    //   x: number;
+    //   y: number;
+    // }
 
     const updateMousePosition = (e: MouseEvent): void => {
       setMousePosition({ x: e.clientX, y: e.clientY });
@@ -275,92 +275,92 @@ const floatingIcons = [
 ];
 
 // Enhanced Skill Card with Magnetic Effect
-type SkillCardProps = {
-  skill: string;
-  category: string;
-  index: number;
-};
+// type SkillCardProps = {
+//   skill: string;
+//   category: string;
+//   index: number;
+// };
 
-function SkillCard({ skill, category, index }: SkillCardProps) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
+// function SkillCard({ skill, category, index }: SkillCardProps) {
+//   const cardRef = useRef<HTMLDivElement>(null);
+//   const [isHovered, setIsHovered] = useState(false);
 
-  interface MouseMoveEvent
-    extends React.MouseEvent<HTMLDivElement, MouseEvent> {}
+//   interface MouseMoveEvent
+//     extends React.MouseEvent<HTMLDivElement, MouseEvent> {}
 
-  const handleMouseMove = (e: MouseMoveEvent): void => {
-    if (!cardRef.current) return;
+//   const handleMouseMove = (e: MouseMoveEvent): void => {
+//     if (!cardRef.current) return;
 
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
+//     const rect = cardRef.current.getBoundingClientRect();
+//     const x = e.clientX - rect.left;
+//     const y = e.clientY - rect.top;
+//     const centerX = rect.width / 2;
+//     const centerY = rect.height / 2;
 
-    const rotateX = (y - centerY) / 10;
-    const rotateY = (centerX - x) / 10;
+//     const rotateX = (y - centerY) / 10;
+//     const rotateY = (centerX - x) / 10;
 
-    cardRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
-  };
+//     cardRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+//   };
 
-  const handleMouseLeave = () => {
-    if (cardRef.current) {
-      cardRef.current.style.transform =
-        "perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)";
-    }
-    setIsHovered(false);
-  };
-  const ContactSection = () => {
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+//   const handleMouseLeave = () => {
+//     if (cardRef.current) {
+//       cardRef.current.style.transform =
+//         "perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)";
+//     }
+//     setIsHovered(false);
+//   };
+//   const ContactSection = () => {
+//     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-    useEffect(() => {
-      interface MousePosition {
-        x: number;
-        y: number;
-      }
+//     useEffect(() => {
+//       interface MousePosition {
+//         x: number;
+//         y: number;
+//       }
 
-      const handleMouseMove = (e: MouseEvent) => {
-        setMousePosition({ x: e.clientX, y: e.clientY });
-      };
+//       const handleMouseMove = (e: MouseEvent) => {
+//         setMousePosition({ x: e.clientX, y: e.clientY });
+//       };
 
-      window.addEventListener("mousemove", handleMouseMove);
-      return () => window.removeEventListener("mousemove", handleMouseMove);
-    }, []);
-  };
+//       window.addEventListener("mousemove", handleMouseMove);
+//       return () => window.removeEventListener("mousemove", handleMouseMove);
+//     }, []);
+//   };
 
-  return (
-    <div
-      ref={cardRef}
-      className="group relative transform transition-all duration-300 interactive"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      onMouseEnter={() => setIsHovered(true)}
-      style={{
-        animationDelay: `${index * 0.1}s`,
-        animation: "fadeInUp 0.6s ease-out forwards",
-      }}
-    >
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-lg blur opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-      <div className="relative bg-gray-900/90 backdrop-blur-sm p-6 rounded-lg border border-cyan-500/20 hover:border-cyan-500/60 transition-all duration-500 hover:shadow-2xl hover:shadow-cyan-500/25">
-        <div className="flex items-center justify-between mb-2">
-          <h4 className="text-cyan-300 text-sm font-medium transition-colors duration-300 group-hover:text-cyan-200">
-            {category}
-          </h4>
-          <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
-        </div>
-        <p className="text-white font-bold text-lg transition-colors duration-300 group-hover:text-cyan-100">
-          {skill}
-        </p>
-        <div className="mt-3 h-1 bg-gray-700 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full transition-all duration-1000 ease-out"
-            style={{ width: isHovered ? "100%" : "0%" }}
-          ></div>
-        </div>
-      </div>
-    </div>
-  );
-}
+//   return (
+//     <div
+//       ref={cardRef}
+//       className="group relative transform transition-all duration-300 interactive"
+//       onMouseMove={handleMouseMove}
+//       onMouseLeave={handleMouseLeave}
+//       onMouseEnter={() => setIsHovered(true)}
+//       style={{
+//         animationDelay: `${index * 0.1}s`,
+//         animation: "fadeInUp 0.6s ease-out forwards",
+//       }}
+//     >
+//       <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-lg blur opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+//       <div className="relative bg-gray-900/90 backdrop-blur-sm p-6 rounded-lg border border-cyan-500/20 hover:border-cyan-500/60 transition-all duration-500 hover:shadow-2xl hover:shadow-cyan-500/25">
+//         <div className="flex items-center justify-between mb-2">
+//           <h4 className="text-cyan-300 text-sm font-medium transition-colors duration-300 group-hover:text-cyan-200">
+//             {category}
+//           </h4>
+//           <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+//         </div>
+//         <p className="text-white font-bold text-lg transition-colors duration-300 group-hover:text-cyan-100">
+//           {skill}
+//         </p>
+//         <div className="mt-3 h-1 bg-gray-700 rounded-full overflow-hidden">
+//           <div
+//             className="h-full bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full transition-all duration-1000 ease-out"
+//             style={{ width: isHovered ? "100%" : "0%" }}
+//           ></div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
 
 // Enhanced Project Card with 3D Tilt
 type ProjectCardProps = {
@@ -726,7 +726,7 @@ export default function Portfolio() {
     {
       title: "AI-Powered Story Generator",
       description:
-        "Create unique kids' stories using AI with interactive storytelling features.",
+        "Create unique kids&apos; stories using AI with interactive storytelling features.",
       stack: "Next.js, Gemini AI, Drizzle ORM",
       liveUrl: "story-generator-black.vercel.app",
       codeUrl: "https://github.com",
@@ -1603,7 +1603,7 @@ export default function Portfolio() {
               whileHover={{ scale: 1.05, rotateY: 5 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              Let's Connect
+              Let&apos;s Connect
             </motion.h2>
             <motion.div
               className="w-32 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 mx-auto mb-8"
@@ -1619,7 +1619,7 @@ export default function Portfolio() {
               transition={{ duration: 0.8, delay: 0.3 }}
               viewport={{ once: true }}
             >
-              Ready to bring your ideas to life? Let's create something
+              Ready to bring your ideas to life? Let&apos;s create something
               extraordinary together.
             </motion.p>
           </motion.div>
@@ -1906,7 +1906,7 @@ export default function Portfolio() {
               MVS
             </div>
             <p className="text-gray-400 max-w-md mx-auto">
-              Crafting digital experiences that push the boundaries of what's
+              Crafting digital experiences that push the boundaries of what&apos;s
               possible
             </p>
           </motion.div>
