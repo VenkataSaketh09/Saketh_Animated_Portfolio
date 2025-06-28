@@ -294,12 +294,9 @@ function ProjectCard({
   imageUrl,
 }: ProjectCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
+  const [, setIsHovered] = useState(false);
 
-  interface MouseMoveEvent
-    extends React.MouseEvent<HTMLDivElement, MouseEvent> {}
-
-  const handleMouseMove = (e: MouseMoveEvent): void => {
+  const handleMouseMove =  (e: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
     if (!cardRef.current) return;
 
     const rect = cardRef.current.getBoundingClientRect();
