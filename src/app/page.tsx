@@ -36,6 +36,10 @@ import {
   Code,
 } from "lucide-react";
 import assets from "../../public/assets.js";
+
+import { AnimatePresence } from "framer-motion";
+import { Menu, X } from "lucide-react";
+import { useScroll } from "framer-motion";
 // Enhanced 3D Particle System for Hero
 function HeroParticleSystem() {
   const particlesRef = useRef<THREE.Points>(null);
@@ -296,7 +300,9 @@ function ProjectCard({
   const cardRef = useRef<HTMLDivElement>(null);
   const [, setIsHovered] = useState(false);
 
-  const handleMouseMove =  (e: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
+  const handleMouseMove = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ): void => {
     if (!cardRef.current) return;
 
     const rect = cardRef.current.getBoundingClientRect();
@@ -335,7 +341,8 @@ function ProjectCard({
       <div className="relative bg-gray-900/95 backdrop-blur-sm rounded-xl border border-cyan-500/20 hover:border-cyan-500/60 transition-all duration-700 overflow-hidden hover:shadow-2xl hover:shadow-cyan-500/25">
         {/* Project Image Header */}
         <div className="relative h-48 overflow-hidden">
-          <img src={imageUrl}
+          <img
+            src={imageUrl}
             alt={title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
@@ -420,50 +427,254 @@ function ScrollProgress() {
   );
 }
 
-// Enhanced Navbar
+// Enhanced Navbar with Hamburger Menu
 function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { scrollY } = useScroll();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
+    return scrollY.onChange((latest) => {
+      setIsScrolled(latest > 50);
+    });
+  }, [scrollY]);
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const navItems = ["About", "Skills", "Projects", "Experience", "Contact"];
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
-        isScrolled
-          ? "bg-gray-900/95 backdrop-blur-sm border-b border-cyan-500/20 shadow-lg shadow-cyan-500/10"
-          : "bg-transparent"
-      }`}
-    >
-      <div className="max-w-6xl mx-auto px-4 py-4">
-        <div className="flex justify-between items-center">
-          <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-            MVS
-          </div>
+    <>
+      <motion.nav
+        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
+          isScrolled
+            ? "bg-gray-900/95 backdrop-blur-sm border-b border-cyan-500/20 shadow-lg shadow-cyan-500/10"
+            : "bg-transparent"
+        }`}
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex justify-between items-center">
+            <motion.div
+              className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent cursor-hover"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              MVS
+            </motion.div>
 
-          <div className="hidden md:flex space-x-8">
-            {["About", "Skills", "Projects", "Experience", "Contact"].map(
-              (item) => (
-                <a
+            {/* Desktop Menu */}
+            <div className="hidden md:flex space-x-8">
+              {navItems.map((item, index) => (
+                <motion.a
                   key={item}
                   href={`#${item.toLowerCase()}`}
-                  className="relative text-gray-300 hover:text-cyan-400 transition-colors duration-300 group interactive"
+                  className="relative text-gray-300 hover:text-cyan-400 transition-colors duration-300 group cursor-hover"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ y: -2 }}
                 >
                   {item}
-                  <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-purple-500 group-hover:w-full transition-all duration-300"></div>
-                </a>
-              )
-            )}
+                  <motion.div
+                    className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-cyan-500 to-purple-500"
+                    initial={{ width: 0 }}
+                    whileHover={{ width: "100%" }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </motion.a>
+              ))}
+            </div>
+
+            {/* Mobile Hamburger Button */}
+            <motion.button
+              className="md:hidden relative z-50 p-2 text-gray-300 hover:text-cyan-400 transition-colors duration-300"
+              onClick={toggleMobileMenu}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <AnimatePresence mode="wait">
+                {isMobileMenuOpen ? (
+                  <motion.div
+                    key="close"
+                    initial={{ rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <X size={24} />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="menu"
+                    initial={{ rotate: 90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: -90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Menu size={24} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.button>
           </div>
         </div>
-      </div>
-    </nav>
+      </motion.nav>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 md:hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={closeMobileMenu}
+            />
+
+            {/* Mobile Menu */}
+            <motion.div
+              className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-gray-900/95 backdrop-blur-md border-l border-cyan-500/20 z-40 md:hidden"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              {/* Menu Header */}
+              <div className="p-6 border-b border-cyan-500/20">
+                <motion.div
+                  className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  Navigation
+                </motion.div>
+              </div>
+
+              {/* Menu Items */}
+              <div className="flex flex-col p-6 space-y-6">
+                {navItems.map((item, index) => (
+                  <motion.a
+                    key={item}
+                    href={`#${item.toLowerCase()}`}
+                    className="relative text-xl text-gray-300 hover:text-cyan-400 transition-colors duration-300 group py-2"
+                    onClick={closeMobileMenu}
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + index * 0.1 }}
+                    whileHover={{ x: 10 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <span className="relative z-10">{item}</span>
+
+                    {/* Animated underline */}
+                    <motion.div
+                      className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-cyan-500 to-purple-500"
+                      initial={{ width: 0 }}
+                      whileHover={{ width: "100%" }}
+                      transition={{ duration: 0.3 }}
+                    />
+
+                    {/* Hover background */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-lg opacity-0 group-hover:opacity-100"
+                      transition={{ duration: 0.3 }}
+                    />
+
+                    {/* Icon indicator */}
+                    <motion.div
+                      className="absolute right-0 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-cyan-400 rounded-full opacity-0 group-hover:opacity-100"
+                      initial={{ scale: 0 }}
+                      whileHover={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                    />
+                  </motion.a>
+                ))}
+              </div>
+
+              {/* Menu Footer */}
+              <motion.div
+                className="absolute bottom-6 left-6 right-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <div className="text-center text-gray-400 text-sm">
+                  <p className="mb-4">Let's connect</p>
+                  <div className="flex justify-center space-x-4">
+                    {[
+                      {
+                        name: "GitHub",
+                        color: "#00ffff",
+                        Icon: Github,
+                        url: "https://github.com/VenkataSaketh09",
+                      },
+                      {
+                        name: "LinkedIn",
+                        color: "#ff00ff",
+                        Icon: Linkedin,
+                        url: "https://www.linkedin.com/in/muddu-venkata-saketh-5118a7275/",
+                      },
+                      {
+                        name: "Email",
+                        color: "#ffff00",
+                        Icon: Mail,
+                        url: "mailto:mvsaketh2020@gmail.com",
+                      },
+                    ].map((social, index) => (
+                      <motion.a
+                        key={social.name}
+                        href={social.url}
+                        target={social.name !== "Email" ? "_blank" : "_self"}
+                        rel={
+                          social.name !== "Email"
+                            ? "noopener noreferrer"
+                            : undefined
+                        }
+                        className="w-10 h-10 rounded-full border border-gray-600 flex items-center justify-center hover:border-cyan-400 transition-colors duration-300 cursor-hover"
+                        whileHover={{
+                          scale: 1.15,
+                          borderColor: social.color,
+                          boxShadow: `0 0 15px ${social.color}40`,
+                          backgroundColor: `${social.color}10`,
+                        }}
+                        whileTap={{ scale: 0.95 }}
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.6 + index * 0.1 }}
+                      >
+                        <social.Icon
+                          size={16}
+                          className="text-gray-400 group-hover:text-white transition-colors duration-300"
+                          style={{ color: social.color }}
+                        />
+                      </motion.a>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Decorative elements */}
+              <div className="absolute top-20 right-4 w-32 h-32 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 rounded-full blur-2xl" />
+              <div className="absolute bottom-20 left-4 w-24 h-24 bg-gradient-to-tr from-purple-500/5 to-pink-500/5 rounded-full blur-xl" />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
@@ -619,7 +830,7 @@ export default function Portfolio() {
         "Full-stack health tracking and doctor appointment app with comprehensive patient management system.",
       stack: "MERN, JWT, Recharts",
       liveUrl: "health-axis-frontend.vercel.app",
-      codeUrl: "https://github.com",
+      codeUrl: "https://github.com/VenkataSaketh09/Health_Axis",
       imageUrl: assets.project1,
     },
     {
@@ -628,7 +839,7 @@ export default function Portfolio() {
         "Track & manage personal expenses with intuitive dashboard and detailed analytics.",
       stack: "Next.js, ShadCN UI, Drizzle ORM",
       liveUrl: "expense-tracker-saketh.vercel.app",
-      codeUrl: "https://github.com",
+      codeUrl: "https://github.com/VenkataSaketh09/Expense_Tracker",
       imageUrl: assets.project2,
     },
     {
@@ -637,7 +848,7 @@ export default function Portfolio() {
         "Create unique kids&apos; stories using AI with interactive storytelling features.",
       stack: "Next.js, Gemini AI, Drizzle ORM",
       liveUrl: "story-generator-black.vercel.app",
-      codeUrl: "https://github.com",
+      codeUrl: "https://github.com/VenkataSaketh09/Story-Generator",
       imageUrl: assets.project3,
     },
   ];
@@ -980,16 +1191,18 @@ export default function Portfolio() {
               <motion.div
                 key={index}
                 className="relative flex flex-col items-center group cursor-pointer"
-                initial={{ opacity: 0, scale: 0.5 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, scale: 0.5, y: 50 }}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
                 whileHover={{ scale: 1.1, y: -10 }}
+                whileTap={{ scale: 1.15, y: -15 }} // Mobile tap animation
                 transition={{
-                  duration: 0.5,
-                  delay: index * 0.05,
+                  duration: 0.6,
+                  delay: index * 0.08,
                   type: "spring",
                   stiffness: 200,
+                  damping: 15,
                 }}
-                viewport={{ once: true }}
+                viewport={{ once: true, margin: "-50px" }}
               >
                 {/* Circular Progress Container */}
                 <div className="relative w-24 h-24 mb-4">
@@ -1024,9 +1237,19 @@ export default function Portfolio() {
                       }}
                       whileHover={{
                         strokeDashoffset: 0,
-                        transition: { duration: 2, ease: "easeInOut" },
+                        strokeWidth: 4,
+                        transition: { duration: 1.5, ease: "easeInOut" },
                       }}
-                      transition={{ duration: 0.8, delay: index * 0.1 }}
+                      whileTap={{
+                        strokeDashoffset: 0,
+                        strokeWidth: 4,
+                        transition: { duration: 1, ease: "easeInOut" },
+                      }}
+                      transition={{
+                        duration: 1.2,
+                        delay: index * 0.1,
+                        ease: "easeOut",
+                      }}
                       viewport={{ once: true }}
                       style={{
                         filter: `drop-shadow(0 0 8px ${skillData.color}40)`,
@@ -1037,15 +1260,30 @@ export default function Portfolio() {
                   {/* Icon in Center */}
                   <div className="absolute inset-0 flex items-center justify-center">
                     <motion.div
-                      className="p-3 rounded-full backdrop-blur-sm"
+                      className="p-2 md:p-3 rounded-full backdrop-blur-sm"
                       style={{
                         backgroundColor: `${skillData.color}20`,
                         border: `1px solid ${skillData.color}40`,
                       }}
                       whileHover={{
                         rotate: 360,
-                        scale: 1.2,
-                        transition: { duration: 2, ease: "easeInOut" },
+                        scale: 1.3,
+                        backgroundColor: `${skillData.color}30`,
+                        transition: { duration: 1.5, ease: "easeInOut" },
+                      }}
+                      whileTap={{
+                        rotate: 360,
+                        scale: 1.4,
+                        backgroundColor: `${skillData.color}40`,
+                        transition: { duration: 1.5, ease: "easeInOut" },
+                      }}
+                      initial={{ rotate: -180, scale: 0 }}
+                      whileInView={{ rotate: 0, scale: 1 }}
+                      transition={{
+                        duration: 0.8,
+                        delay: index * 0.1 + 0.3,
+                        type: "spring",
+                        stiffness: 200,
                       }}
                     >
                       <skillData.icon
@@ -1055,6 +1293,21 @@ export default function Portfolio() {
                       />
                     </motion.div>
                   </div>
+                  {/* Animated ring effect for mobile */}
+                  <motion.div
+                    className="absolute inset-0 rounded-full border-2 opacity-0"
+                    style={{ borderColor: skillData.color }}
+                    whileInView={{
+                      scale: [1, 1.2, 1],
+                      opacity: [0, 0.6, 0],
+                    }}
+                    transition={{
+                      duration: 2,
+                      delay: index * 0.1 + 0.5,
+                      repeat: Number.POSITIVE_INFINITY,
+                      repeatDelay: 3,
+                    }}
+                  />
 
                   {/* Proficiency Percentage */}
                   {/* <motion.div
@@ -1072,26 +1325,68 @@ export default function Portfolio() {
 
                 {/* Skill Name - Shows on Hover */}
                 <motion.div
-                  className="text-center opacity-70 group-hover:opacity-100"
-                  whileHover={{ y: -5 }}
-                  transition={{ duration: 0.3 }}
+                  className="text-center opacity-70 group-hover:opacity-100 group-active:opacity-100"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 0.7, y: 0 }}
+                  whileHover={{ y: -5, opacity: 1 }}
+                  whileTap={{ y: -8, opacity: 1, scale: 1.05 }}
+                  transition={{
+                    duration: 0.4,
+                    delay: index * 0.1 + 0.4,
+                  }}
                 >
                   <h3
-                    className="text-sm font-semibold tracking-wide group-hover:text-white transition-colors duration-300"
+                    className="text-xs md:text-sm font-semibold tracking-wide group-hover:text-white group-active:text-white transition-colors duration-300"
                     style={{ color: skillData.color }}
                   >
                     {skillData.name}
                   </h3>
                 </motion.div>
 
-                {/* Glow Effect */}
-                <div
-                  className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-40 pointer-events-none transition-opacity duration-300"
+                {/* Enhanced Glow Effect for mobile */}
+                <motion.div
+                  className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-40 group-active:opacity-50 pointer-events-none transition-opacity duration-300"
                   style={{
                     background: `radial-gradient(circle, ${skillData.color}30 0%, transparent 70%)`,
                     filter: `blur(15px)`,
                   }}
+                  whileInView={{
+                    scale: [0.8, 1.1, 0.8],
+                    opacity: [0, 0.2, 0],
+                  }}
+                  transition={{
+                    duration: 3,
+                    delay: index * 0.2,
+                    repeat: Number.POSITIVE_INFINITY,
+                    repeatDelay: 4,
+                  }}
                 />
+
+                {/* Floating particles effect */}
+                {[...Array(3)].map((_, particleIndex) => (
+                  <motion.div
+                    key={particleIndex}
+                    className="absolute w-1 h-1 rounded-full opacity-0 pointer-events-none"
+                    style={{
+                      backgroundColor: skillData.color,
+                      left: `${20 + particleIndex * 30}%`,
+                      top: `${20 + particleIndex * 20}%`,
+                    }}
+                    whileInView={{
+                      y: [-20, -40, -20],
+                      x: [0, Math.random() * 20 - 10, 0],
+                      opacity: [0, 0.8, 0],
+                      scale: [0, 1, 0],
+                    }}
+                    transition={{
+                      duration: 2,
+                      delay: index * 0.1 + particleIndex * 0.3,
+                      repeat: Number.POSITIVE_INFINITY,
+                      repeatDelay: 5,
+                      ease: "easeInOut",
+                    }}
+                  />
+                ))}
               </motion.div>
             ))}
           </motion.div>
@@ -1565,14 +1860,14 @@ export default function Portfolio() {
                   Icon: Github,
                   title: "GitHub",
                   value: "github.com/mudduvenkata",
-                  link: "https://github.com/mudduvenkata",
+                  link: "https://github.com/VenkataSaketh09",
                   color: "#ffff00",
                 },
                 {
                   Icon: Linkedin,
                   title: "LinkedIn",
                   value: "linkedin.com/in/mudduvenkata",
-                  link: "https://linkedin.com/in/mudduvenkata",
+                  link: "https://www.linkedin.com/in/muddu-venkata-saketh-5118a7275/",
                   color: "#00ff00",
                 },
               ].map((contact, index) => (
@@ -1814,8 +2109,8 @@ export default function Portfolio() {
               MVS
             </div>
             <p className="text-gray-400 max-w-md mx-auto">
-              Crafting digital experiences that push the boundaries of what&apos;s
-              possible
+              Crafting digital experiences that push the boundaries of
+              what&apos;s possible
             </p>
           </motion.div>
 
@@ -1827,10 +2122,11 @@ export default function Portfolio() {
             viewport={{ once: true }}
           >
             {[
-              { name: "GitHub", url: "https://github.com/mudduvenkata" },
-              { name: "LinkedIn", url: "https://linkedin.com/in/mudduvenkata" },
-              { name: "Twitter", url: "https://twitter.com/mudduvenkata" },
-              { name: "Instagram", url: "https://instagram.com/mudduvenkata" },
+              { name: "GitHub", url: "https://github.com/VenkataSaketh09" },
+              {
+                name: "LinkedIn",
+                url: "https://www.linkedin.com/in/muddu-venkata-saketh-5118a7275/",
+              },
             ].map((social, index) => (
               <motion.a
                 key={social.name}
