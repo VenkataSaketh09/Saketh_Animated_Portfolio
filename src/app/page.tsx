@@ -613,7 +613,7 @@ function Navbar() {
                 transition={{ delay: 0.5 }}
               >
                 <div className="text-center text-gray-400 text-sm">
-                  <p className="mb-4">Let's connect</p>
+                  <p className="mb-4">Let&apos;s connect</p>
                   <div className="flex justify-center space-x-4">
                     {[
                       {
